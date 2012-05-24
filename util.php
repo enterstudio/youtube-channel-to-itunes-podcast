@@ -63,7 +63,9 @@ function create_channel($podcast_label, $xml_channel){
 function download_video($youtube_url, $quality, $video_name){
 	global $logger;
 	$logger->debug("Downloading video using command: ./youtube-dl.sh $youtube_url -f $quality -o $video_name");
-	exec ("./lib/youtube-dl.sh $youtube_url -f $quality -o $video_name");
+	exec ("./lib/youtube-dl-russo.sh $youtube_url -f $quality -o $video_name > logs/download.log");
+	$outputs = file("logs/download.log");
+	$logger->debug($outputs[5]);
 }
 
 /**
@@ -141,7 +143,7 @@ function add_new_video($title, $youtube_url, $description, $video_time, $pubDate
     $video->addCHild("author", $author);
     $xmldoc->asXML($videos_xml_path);
 
-	$logger->debug("Inserted video into \"videos.xml\" with ID = $id");
+	$logger->debug("Inserted video \"$title\"into \"videos.xml\" with ID = $id");
 	return $id;
 }
 

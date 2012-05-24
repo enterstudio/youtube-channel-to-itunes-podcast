@@ -31,7 +31,7 @@ function setupLogFile($logName, $logConfig = null, $logLevel = null){
 	//Delete the old log files - 60 days duration
 	@unlink( dirname(__FILE__) . "/../logs/$logName-$lastMonth.log" );
 	
-	$logFile = (dirname(__FILE__) . "/../logs/$logName-$today.log");
+	$logFile = dirname(__FILE__) . "/../logs/$logName-$today.log";
 	
 	return Log::singleton("file", $logFile, "\t" , $logConfig, $logLevel);
 }
