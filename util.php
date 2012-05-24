@@ -62,7 +62,7 @@ function create_channel($podcast_label, $xml_channel){
  **/
 function download_video($youtube_url, $quality, $video_name, $video_id){
 	global $logger;
-	$logger->debug("Downloading video using command: ./youtube-dl.sh $youtube_url -f $quality -o $video_name");
+	$logger->debug("Downloading video using command: ./lib/youtube-dl-russo.sh $youtube_url -f $quality -o $video_name > logs/download_$video_id.log");
 	exec ("./lib/youtube-dl-russo.sh $youtube_url -f $quality -o $video_name > logs/download_$video_id.log");
 }
 
