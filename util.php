@@ -60,12 +60,10 @@ function create_channel($podcast_label, $xml_channel){
  * @param $video_name The full path and name of the video to be saved
  * @author Eduardo Russo
  **/
-function download_video($youtube_url, $quality, $video_name){
+function download_video($youtube_url, $quality, $video_name, $video_id){
 	global $logger;
 	$logger->debug("Downloading video using command: ./youtube-dl.sh $youtube_url -f $quality -o $video_name");
-	exec ("./lib/youtube-dl-russo.sh $youtube_url -f $quality -o $video_name > logs/download.log");
-	$outputs = file("logs/download.log");
-	$logger->debug($outputs[5]);
+	exec ("./lib/youtube-dl-russo.sh $youtube_url -f $quality -o $video_name > logs/download_$video_id.log");
 }
 
 /**
@@ -248,6 +246,7 @@ function delete_ignored_video($video_title, $videos_path, $videos_xml_path, $vid
 		if (!strcmp($video_title, $video->title)){
 			$logger->debug("Deleting video " . $videos_path . $video->label . "/" . $video->id . $video_extension);
 			unlink($videos_path . $video->label . "/" . $video->id . $video_extension);
+			unlink("logs/download_" . $video->id . ".log");
 		}
 	}
 }

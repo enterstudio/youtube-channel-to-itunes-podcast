@@ -61,7 +61,7 @@ else{
 				$youtube_url = get_youtube_url($media->group->content->attributes());
 				$id = add_new_video($item->title, $youtube_url, $item->description, $video_time, $item->pubDate, $item->author, $podcast_label, $videos_xml_path);
 				$video_name = "$videos_path$podcast_label/$id$video_extension";
-				download_video($youtube_url, $video_quality, $video_name);
+				download_video($youtube_url, $video_quality, $video_name, $id);
 				$video_state = 1;
 			}
 			//Video has been downloaded and state is "delete"-> Advance video state to ignore and delete the file
