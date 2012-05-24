@@ -44,10 +44,10 @@ else{
 		
 		create_channel($podcast_label, $youtube_feed_xml->channel);
 		
-		$logger->debug("\n\nYouTube Feed: $you_tube_feed\n$limit videos is the LIMIT\n" . count($youtube_feed_xml->channel->item) . " videos returned in feed \n");
+		$logger->info("\n\nYouTube Feed: $you_tube_feed\n$limit videos is the LIMIT\n" . count($youtube_feed_xml->channel->item) . " videos returned in feed \n");
 		
 		foreach ($youtube_feed_xml->channel->item as $item){
-			$logger->debug("$counter | Title: $item->title");
+			$logger->info("$counter | Title: $item->title");
 			if ($counter++ >= $limit)
 				break;
 			$content = $item->children('http://purl.org/rss/1.0/modules/content/');
@@ -56,7 +56,7 @@ else{
 			$link;
 			//Video hasn't be downloaded
 			if ($video_state == false){
-				$logger->debug("Video in \"NULL\" state. New Video detected.");
+				$logger->info("Video in \"NULL\" state. New Video detected.");
 				$video_time = convert_video_duration($media->group->content->attributes());
 				$youtube_url = get_youtube_url($media->group->content->attributes());
 				$id = add_new_video($item->title, $youtube_url, $item->description, $video_time, $item->pubDate, $item->author, $podcast_label, $videos_xml_path);
@@ -66,35 +66,35 @@ else{
 			}
 			//Video has been downloaded and state is "delete"-> Advance video state to ignore and delete the file
 			elseif($video_state == "delete"){
-				$logger->debug("Video in \"delete\" state");
+				$logger->info("Video in \"delete\" state");
 				advance_video_state($item->title, $videos_xml_path);
 				delete_ignored_video($item->title, $videos_path, $videos_xml_path, $video_extension);
-				$logger->debug("");
+				$logger->info("");
 			}
 			// Video is in ignore state -> do't show video in XML
 			elseif($video_state == "ignore"){
-				$logger->debug("Video in \"ignore\" state");
-				$logger->debug("");
+				$logger->info("Video in \"ignore\" state");
+				$logger->info("");
 			}
 			//Video has been downloaded and state > 0 -> Advance state and show video URL
 			if($video_state > 0){
-				$logger->debug("Video in \"numbered\" state (1 to 6)");
+				$logger->info("Video in \"numbered\" state (1 to 6)");
 				advance_video_state($item->title, $videos_xml_path);
 				if (file_has_been_downloaded($item->title, $videos_path, $videos_xml_path, $video_extension)){
-					$logger->debug("File download finished correctly");
+					$logger->info("File download finished correctly");
 					// Reload the XML in case a new video has been inserted
 					$videos_xml = simplexml_load_file($videos_xml_path);
 					echo get_video($item->title, $url_path, $video_type, $video_extension, $videos_xml);
-					$logger->debug("");
+					$logger->info("");
 				}
 				else{
-					$logger->debug("File has NOT been downloaded. Stop the loop");
+					$logger->info("File has NOT been downloaded. Stop the loop");
 					$counter = $limit;
-					$logger->debug("");
+					$logger->info("");
 				}
 			}
 		}
-		$logger->debug("END OF FILE\n\n");
+		$logger->info("END OF FILE\n\n");
 		echo "	</channel>\n</rss>";
 	}
 	else{

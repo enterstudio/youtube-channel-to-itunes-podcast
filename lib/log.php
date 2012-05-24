@@ -23,7 +23,8 @@ function setupLogFile($logName, $logConfig = null, $logLevel = null){
 		CHANGE LOG DEBUG LEVEL TO PEAR_LOG_ERR ON PRODUCTION
 		***************************************************************/
 		// $logLevel =  PEAR_LOG_ERR;
-		$logLevel =  PEAR_LOG_DEBUG;
+		// $logLevel =  PEAR_LOG_DEBUG;
+		$logLevel =  PEAR_LOG_INFO;
 	}
 	$today = date("Y-n-j");
 	$lastMonth = date("Y-n-j", mktime(0, 0, 0, date("m"), date("d")-60,   date("Y")));

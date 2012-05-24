@@ -13,7 +13,7 @@ function convert_video_duration($content_attributes){
 	$secs = $seconds % 60;
 	if ($secs < 10)
 		$secs = "0" . $secs;
-	$logger->debug("Converted $seconds seconds to $mins:$secs");
+	$logger->info("Converted $seconds seconds to $mins:$secs");
 	return "$mins:$secs";
 }
 /**
@@ -25,7 +25,7 @@ function convert_video_duration($content_attributes){
  **/
 function create_channel($podcast_label, $xml_channel){
 	global $logger;
-	$logger->debug("Creating Podcast Channel");
+	$logger->info("Creating Podcast Channel");
 	
 	$channel = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 	$channel .= "<rss xmlns:itunes=\"http://www.itunes.com/dtds/podcast-1.0.dtd\" version=\"2.0\">\n";
@@ -62,7 +62,7 @@ function create_channel($podcast_label, $xml_channel){
  **/
 function download_video($youtube_url, $quality, $video_name, $video_id){
 	global $logger;
-	$logger->debug("Downloading video using command: ./lib/youtube-dl-russo.sh $youtube_url -f $quality -o $video_name > logs/download_$video_id.log");
+	$logger->info("Downloading video using command: ./lib/youtube-dl-russo.sh $youtube_url -f $quality -o $video_name > logs/download_$video_id.log");
 	exec ("./lib/youtube-dl-russo.sh $youtube_url -f $quality -o $video_name > logs/download_$video_id.log");
 }
 
@@ -77,7 +77,7 @@ function get_youtube_url($content_attributes){
 	$video_url = explode("v/", $content_attributes["url"]);
 	$video_url = explode("?", $video_url[1]);
 	$video_url = "http://www.youtube.com/watch?v=" . $video_url[0];
-	$logger->debug("YouTube video URL: $video_url");
+	$logger->info("YouTube video URL: $video_url");
 	return $video_url;
 }
 
@@ -99,11 +99,11 @@ function get_video_state($title, $videos_xml_path){
     $videos = $xmldoc->videos;
 	foreach($videos->video as $video){
 		if (!strcmp($title, $video->title)){
-			$logger->debug("Video State: " . $video->state);
+			$logger->info("Video State: " . $video->state);
 			return $video->state;
 		}
 	}
-	$logger->debug("No video found, it must be a new video");
+	$logger->info("No video found, it must be a new video");
 	return false;
 }
 
@@ -141,7 +141,7 @@ function add_new_video($title, $youtube_url, $description, $video_time, $pubDate
     $video->addCHild("author", $author);
     $xmldoc->asXML($videos_xml_path);
 
-	$logger->debug("Inserted video \"$title\"into \"videos.xml\" with ID = $id");
+	$logger->info("Inserted video \"$title\"into \"videos.xml\" with ID = $id");
 	return $id;
 }
 
@@ -174,7 +174,7 @@ function advance_video_state($video_title, $videos_xml_path){
 			}
 		}
 	}
-	$logger->debug("Changed state from $original_state to $final_state");
+	$logger->info("Changed state from $original_state to $final_state");
 	$xmldoc->asXML($videos_xml_path);
 }
 
@@ -209,7 +209,7 @@ function get_video($video_title, $url_path, $video_type, $video_extension, $xml)
 			$video_feed .= "		</item>\n";
 		}
 	}
-	$logger->debug("Video <item> returned");
+	$logger->info("Video <item> returned");
 	return $video_feed;
 }
 
@@ -226,7 +226,7 @@ function get_base_url($request_uri) {
 	if (strpos($this_directory, "?") !== false)
 		$this_directory = reset(explode("?", $this_directory));
 
-	$logger->debug("Base URL returned is: http://" . $_SERVER['HTTP_HOST'] . $this_directory);
+	$logger->info("Base URL returned is: http://" . $_SERVER['HTTP_HOST'] . $this_directory);
 	return "http://" . $_SERVER['HTTP_HOST'] . $this_directory;
 }
 
@@ -244,7 +244,7 @@ function delete_ignored_video($video_title, $videos_path, $videos_xml_path, $vid
 	$videos = $xmldoc->videos;
 	foreach($videos->video as $video){
 		if (!strcmp($video_title, $video->title)){
-			$logger->debug("Deleting video " . $videos_path . $video->label . "/" . $video->id . $video_extension);
+			$logger->info("Deleting video " . $videos_path . $video->label . "/" . $video->id . $video_extension);
 			unlink($videos_path . $video->label . "/" . $video->id . $video_extension);
 			unlink("logs/download_" . $video->id . ".log");
 		}
@@ -262,7 +262,7 @@ function delete_ignored_video($video_title, $videos_path, $videos_xml_path, $vid
  **/
 function file_has_been_downloaded($video_title, $videos_path, $videos_xml_path, $video_extension){
 	global $logger;
-	$logger->debug("Checking if file has been downloaded");
+	$logger->info("Checking if file has been downloaded");
 	$xmldoc = simplexml_load_file($videos_xml_path);
 	$videos = $xmldoc->videos;
 	foreach($videos->video as $video){
@@ -270,12 +270,12 @@ function file_has_been_downloaded($video_title, $videos_path, $videos_xml_path, 
 		if (!strcmp($video_title, $video->title)){
 			//File has been completly downloaded
 			if (file_exists($video_name)){
-				$logger->debug("File has been completly downloaded - return TRUE");
+				$logger->info("File has been completly downloaded - return TRUE");
 				return true;
 			}
 			//No file has been downloaded
 			elseif (!file_exists ($video_name . ".part")){
-				$logger->debug("No file has been downloaded, not even \".part\" - return FALSE");
+				$logger->info("No file has been downloaded, not even \".part\" - return FALSE");
 				$oNode = dom_import_simplexml($video);
 				$oNode->parentNode->removeChild($oNode);
 				$xmldoc->asXML($videos_xml_path);
@@ -283,20 +283,20 @@ function file_has_been_downloaded($video_title, $videos_path, $videos_xml_path, 
 			}
 			//Only part has been downloaded
 			else{
-				$logger->debug("\"part\" has been downloaded");
+				$logger->info("\"part\" has been downloaded");
 				// echo "File is downloading";
 				//If videoState = 6, delete the file and download again
 				if($video->state >= 6){
-					$logger->debug("State is 6. Delete \"part\" file and try again on next load");
+					$logger->info("State is 6. Delete \"part\" file and try again on next load");
 					unlink($video_name . ".part");
 					$oNode = dom_import_simplexml($video);
 					$oNode->parentNode->removeChild($oNode);
 					$xmldoc->asXML($videos_xml_path);
 				}
 				else{
-					$logger->debug("State is less than 6. Waiting for file to finish the download");
+					$logger->info("State is less than 6. Waiting for file to finish the download");
 				}
-				$logger->debug("return FALSE");
+				$logger->info("return FALSE");
 				return false;
 			}
 		}
