@@ -27,10 +27,10 @@ function setupLogFile($logName, $logConfig = null, $logLevel = null){
 		$logLevel =  PEAR_LOG_INFO;
 	}
 	$today = date("Y-n-j");
-	$lastMonth = date("Y-n-j", mktime(0, 0, 0, date("m"), date("d")-60,   date("Y")));
+	$lastWeek = date("Y-n-j", mktime(0, 0, 0, date("m"), date("d")-7,   date("Y")));
 
-	//Delete the old log files - 60 days duration
-	@unlink( dirname(__FILE__) . "/../logs/$logName-$lastMonth.log" );
+	//Delete the old log files - 7 days duration
+	@unlink( dirname(__FILE__) . "/../logs/$logName-$lastWeek.log" );
 	
 	$logFile = dirname(__FILE__) . "/../logs/$logName-$today.log";
 	
